@@ -7,7 +7,7 @@ $(error "Please set DEVKITPRO in your environment. export DEVKITPRO=<path to>/de
 endif
 
 TOPDIR ?= $(CURDIR)
-include $(DEVKITPRO)/libnx/switch_rules
+include $(DEVKITPRO)/libounce/switch2_rules
 
 #---------------------------------------------------------------------------------
 # TARGET is the name of the output
@@ -158,12 +158,19 @@ $(BUILD): FsLib SDLLib Assets
 
 #---------------------------------------------------------------------------------
 
-FsLib:
+.PHONY: prepare_submodules
+prepare_submodules:
+	@if [ ! -f ./Libraries/FsLib/Switch/FsLib/Makefile ] || [ ! -f ./Libraries/SDLLib/SDL/Makefile ]; then \
+		git submodule update --init --recursive; \
+	fi
+	@./scripts/patch_submodules.sh
+
+FsLib: prepare_submodules
 	@$(MAKE) -C ./Libraries/FsLib/Switch/FsLib/ -j
 
 #---------------------------------------------------------------------------------
 
-SDLLib:
+SDLLib: prepare_submodules
 	@$(MAKE) -C ./Libraries/SDLLib/SDL/ -j
 
 #---------------------------------------------------------------------------------

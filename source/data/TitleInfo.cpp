@@ -29,7 +29,7 @@ data::TitleInfo::TitleInfo(uint64_t applicationID) noexcept
     if (isSystem || getError)
     {
         const std::string appIDHex = stringutil::get_formatted_string("%04X", m_applicationID & 0xFFFF);
-        m_entry                    = &m_data.nacp.lang[SetLanguage_ENUS]; // I'm hoping this is enough?
+        m_entry                    = &m_data.nacp.lang_data.lang[SetLanguage_ENUS]; // I'm hoping this is enough?
 
         std::snprintf(m_entry->name, TitleInfo::SIZE_PATH_SAFE, "%016lX", m_applicationID);
         TitleInfo::get_create_path_safe_title();
@@ -50,7 +50,7 @@ data::TitleInfo::TitleInfo(uint64_t applicationID, NsApplicationControlData &con
     const bool entryError = error::libnx(nacpGetLanguageEntry(&m_data.nacp, &m_entry));
     if (entryError)
     {
-        m_entry = &m_data.nacp.lang[SetLanguage_ENUS];
+        m_entry = &m_data.nacp.lang_data.lang[SetLanguage_ENUS];
         std::snprintf(m_entry->name, TitleInfo::SIZE_PATH_SAFE, "%016lX", m_applicationID);
     }
 
@@ -215,8 +215,8 @@ bool data::TitleInfo::get_english_title(const char **titleOut) const noexcept
     static constexpr uint8_t ENGB_INDEX = 1;
 
     // Grab the pointers to them.
-    const char *enUs = m_data.nacp.lang[ENUS_INDEX].name;
-    const char *enGb = m_data.nacp.lang[ENGB_INDEX].name;
+    const char *enUs = m_data.nacp.lang_data.lang[ENUS_INDEX].name;
+    const char *enGb = m_data.nacp.lang_data.lang[ENGB_INDEX].name;
 
     // If they're both empty, return false.
     if (enUs[0] == 0x00 && enGb[0] == 0x00) { return false; }
